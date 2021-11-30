@@ -48,6 +48,9 @@ class LgTvRs232Connector(object):
         self.device_id = device_id
         self.serial = Serial(port=port, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE, stopbits=STOPBITS_ONE)
 
+    def __del__(self):
+        self.serial.close()
+
     async def _send_command(self, command: str, *data: int):
         prepared_command = serialize_request(command, data, self.device_id)
         print("sending command: " + prepared_command)

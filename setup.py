@@ -7,4 +7,5 @@ setup(
     author='Dawid Rashid',
     license='MIT',
     install_requires=['pyserial'],
+    include_package_data=True,
 )
