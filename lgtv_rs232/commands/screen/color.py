@@ -9,6 +9,6 @@ class ColorCommands(object):
 
     def set_state(self, state: int):
         if state > 100 or state < 0:
-            raise NameError('Color state must be an int value between 0 and 100')
+            raise Exception('Color state must be an int value between 0 and 100')
 
         return self.send_command(self.command, state)

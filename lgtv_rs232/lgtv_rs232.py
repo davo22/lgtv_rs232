@@ -1,4 +1,3 @@
-import logging
 import asyncio
 from connector import LgTvRs232Connector
 from commands.power import PowerCommands, Power
@@ -7,39 +6,15 @@ from commands.sound import SoundCommands
 from commands.osd_select import OSDSelectCommands
 from commands.remote_control import RemoteControlCommands
 
-_LOGGER = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
-
-__all__ = ['LgTvRs232Client']
-
 
 class LgTvRs232Client(LgTvRs232Connector):
     """LG TV RS-232 client."""
 
-    def __init__(self, port):
+    def __init__(self, port: str, device_id=0):
         """Initialize the LG TV client."""
-        super().__init__(port)
+        super().__init__(port, device_id)
         self.power = PowerCommands(self._send_command)
         self.screen = ScreenCommands(self._send_command)
         self.sound = SoundCommands(self._send_command)
         self.osd_select = OSDSelectCommands(self._send_command)
         self.remote_control = RemoteControlCommands(self._send_command)
-
-
-async def run():
-    client = LgTvRs232Client("/tty/USB0")
-    await client.power.on()
-    await client.power.get_state()
-    await client.power.set_state(Power.ON)
-
-    await client.screen.aspect_ratio.set_state(AspectRatio.ORIGINAL)
-    await client.screen.aspect_ratio.get_state()
-
-    await client.screen.screen_mute.set_state(ScreenMute.SCREEN_MUTE_ON)
-    await client.screen.screen_mute.get_state()
-
-    await client.sound.volume_control.set_state(4)
-    await client.sound.volume_control.get_state()
-
-
-asyncio.run(run())
