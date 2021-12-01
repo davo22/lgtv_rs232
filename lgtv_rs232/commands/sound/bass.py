@@ -1,3 +1,6 @@
+from ..exceptions import InvalidArgumentException
+
+
 class BassCommands(object):
     command = "ks"
 
@@ -9,6 +12,6 @@ class BassCommands(object):
 
     def set_state(self, state: int):
         if state > 100 or state < 0:
-            raise Exception('Bass state must be an int value between 0 and 100')
+            raise InvalidArgumentException('Bass state must be an int value between 0 and 100')
 
         return self.send_command(self.command, state)

@@ -1,3 +1,6 @@
+from ..exceptions import InvalidArgumentException
+
+
 class BalanceCommands(object):
     command = "kt"
 
@@ -9,6 +12,6 @@ class BalanceCommands(object):
 
     def set_state(self, state: int):
         if state > 100 or state < 0:
-            raise Exception('Balance state must be an int value between 0 and 100')
+            raise InvalidArgumentException('Balance state must be an int value between 0 and 100')
 
         return self.send_command(self.command, state)

@@ -1,3 +1,6 @@
+from ..exceptions import InvalidArgumentException
+
+
 class SharpnessCommands(object):
     command = "kk"
 
@@ -9,6 +12,6 @@ class SharpnessCommands(object):
 
     def set_state(self, state: int):
         if state > 50 or state < 0:
-            raise Exception('Sharpness state must be an int value between 0 and 50')
+            raise InvalidArgumentException('Sharpness state must be an int value between 0 and 50')
 
         return self.send_command(self.command, state)

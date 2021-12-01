@@ -4,6 +4,20 @@ from string import Template
 from serial import Serial, PARITY_NONE, EIGHTBITS, STOPBITS_ONE
 
 
+timeout = 30
+
+
+class DeviceErrorException(BaseException):
+    def __init__(self, *args, **kwargs):
+        pass
+
+
+class ResponseTimeoutException(BaseException):
+    def __init__(self, *args, **kwargs):
+        pass
+
+
+
 def join_data_string(data: Iterator[str]):
     string = ''
     for idx, item in enumerate(data):
@@ -34,7 +48,7 @@ def deserialize_response(response: str):
     data = hex2int(response[7:-1])
 
     if not status == "OK":
-        raise Exception('Device responded with error. Returned data: ' + str(data))
+        raise DeviceErrorException('Device responded with error. Returned data: ' + str(data))
 
     return data
 
@@ -46,18 +60,16 @@ class LgTvRs232Connector(object):
 
     def __init__(self, port: str, device_id: int):
         self.device_id = device_id
-        self.serial = Serial(port=port, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE, stopbits=STOPBITS_ONE)
+        self.serial = Serial(port=port, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE, stopbits=STOPBITS_ONE, timeout=timeout)
 
     def __del__(self):
         self.serial.close()
 
     async def _send_command(self, command: str, *data: int):
         prepared_command = serialize_request(command, data, self.device_id)
-        print("sending command: " + prepared_command)
         self.serial.write(prepared_command.encode())
+        response = self.serial.read(10).decode()
+        if response == '':
+            raise ResponseTimeoutException('Device not responded within ' + str(timeout) + ' seconds.')
 
-        print("waiting for command response...")
-
-        response = self.serial.read_until(expected='x')
-        print("received command response: " + response)
         return deserialize_response(response)
